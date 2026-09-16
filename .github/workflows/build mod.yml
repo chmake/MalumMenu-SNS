@@ -1,0 +1,35 @@
+name: Build SNSMenu
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore MalumMenu.sln
+
+      - name: Build
+        run: dotnet build MalumMenu.sln --configuration Release --no-restore
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: SNSMenu
+          path: |
+            src/bin/Release/**/MalumMenu.dll
+            src/bin/Release/**/MalumMenu.pdb
+          if-no-files-found: error
