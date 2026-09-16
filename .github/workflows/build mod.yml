@@ -1,3 +1,4 @@
+```yaml
 name: Build SNSMenu
 
 on:
@@ -19,13 +20,21 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.lock.json', '**/nuget.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
         run: dotnet restore MalumMenu.sln
 
       - name: Build
         run: dotnet build MalumMenu.sln --configuration Release --no-restore
 
-      - name: Upload DLL
+      - name: Upload build
         uses: actions/upload-artifact@v4
         with:
           name: SNSMenu
@@ -33,3 +42,4 @@ jobs:
             src/bin/Release/**/MalumMenu.dll
             src/bin/Release/**/MalumMenu.pdb
           if-no-files-found: error
+```
