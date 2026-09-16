@@ -1,30 +1,25 @@
-using System.Collections.Generic;
-
 namespace MalumMenu.SNS;
 
 public static class SNSRuleManager
 {
-    private static readonly Dictionary<byte, byte> LastShapeshiftTargets = new();
-
     public static void RecordShapeshift(byte playerId, byte targetId)
     {
-        LastShapeshiftTargets[playerId] = targetId;
+        SNSShapeshiftTracker.TrackInternal(playerId, targetId);
     }
 
     public static bool HasShapeshiftedInto(byte playerId, byte targetId)
     {
-        return LastShapeshiftTargets.TryGetValue(playerId, out byte lastTarget)
-               && lastTarget == targetId;
+        return SNSShapeshiftTracker.IsShapeshiftedAs(playerId, targetId);
     }
 
     public static void ClearShapeshift(byte playerId)
     {
-        LastShapeshiftTargets.Remove(playerId);
+        SNSShapeshiftTracker.ClearInternal(playerId);
     }
 
     public static void ClearAll()
     {
-        LastShapeshiftTargets.Clear();
+        SNSShapeshiftTracker.ClearAllInternal();
     }
 
     public static void ResetPlayer(byte playerId)
